@@ -57,7 +57,8 @@ Như tên gọi, Ceph monitor chịu trách nhiệm giám sát tình trạng c�
 	```# ceph pg dump
 	```
  - **CRUSH map:** Lưu thông tin về các storage devices, failure domain ( host, rack, row, room, device) và các quy tắc khi lưu trữ dữ liệu .Để check CRUSH  map, thực hiện command sau:
-	```# ceph osd crush dump
+	```
+	# ceph osd crush dump
 	```
  - **MDS map:** Lưu thông tin về MDS map epoch, map creation và modification time, data and metadata pool ID, cluster MDS count, MDS state .Để check MDS map, thực hiện command sau:
     ```# ceph mds dump
