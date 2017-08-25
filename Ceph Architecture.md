@@ -36,3 +36,12 @@ Khi Ceph cluster nhận được yêu cầu **write** từ phía client, thuật
 RADOS đảm bảo dữ liệu luôn tin cậy. Tại cùng một thời điểm, RADOS replicate các object, tạo ra các bản copy và lưu chúng trong các failure zone khác nhau, tránh lưu chúng trên cùng một failure zone. Ngoài lưu trữ và replicate các object trên toàn bộ cluster, RADOS cũng đảm bảo các object luôn trong trạng thái nhất quán. Trong trường hợp các object không nhất quán, hành động **recover** được thực hiện trên các bản sao object còn lại. Hoạt động này được thực hiện tự động và trong suốt với người dùng, cung cấp khả năng self-managing và self-healing cho hệ thống Ceph. 
 
 ## Ceph Object Storage Device
+Ceph OSD là một trong những thành phần quan trọng nhất trong Ceph storage cluster. Nó lưu trữ **actual data** trong các ổ đĩa vật lí trên mỗi node của cluster dưới dạng các object. Phần lớn các công việc bên trọng Cẹph cluster được thực hiện bới Ceph OSD daemon. Chúng ta sẽ đi thảo luận về vai trò và trách nhiệm của Ceph OSD daemon.
+
+Ceph OSD lưu trữ dữ liệu người dùng và trả về cùng một dữ liệu đó khi có yêu cầu của người dùng. Một Ceph cluster bao gồm nhiều OSDs.  Bất kì hành động **read** hoặc **write **, client đều yêu cầu một **cluster map** từ monitors, và sau đó client sẽ trực tiếp tương tác với các OSD trong các hành động **read/write** mà không cần sự can thiệp của monitor. Điều này khiến qúa trình trao đổi dữ liệu diễn ra nhanh hơn, client có thế lưu trực tiếp tới OSD mà không cần thêm bất kì lớp xử lí dữ liệu nào.
+
+Ceph cung cấp độ tin cậy cao bằng cách replicate mỗi object trên các node trong cluster, làm chúng có tính sẵn sàng cao và khả năng chống lỗi. Mỗi object trong OSD có một bản **primary copy** và một số **secondary copy** được phân bố đều trên các OSD. Mỗi OSD vừa đóng vai trò là primary OSD của một số object này, vừa có thể là secondary OSD của một số object khác. Bình thường các secondary OSD nằm dưới sự điều khiển của primary OSD, tuy nhiên chúng vẫn có khả năng trở thành primary OSD.
+
+Trong trường hợp disk failure, Ceph OSD daemon sẽ so sánh với các OSD khác để thực hiện hành động **recovery**. Trong thời gian này, secondary OSD giữ bản sao của object bị lỗi sẽ được đẩy lên làm primary, đồng thời các bản sao mới sẽ được tạo trong qúa trình recover. Qúa trình này là trong suốt với người dùng.
+
+## Ceph monitors
