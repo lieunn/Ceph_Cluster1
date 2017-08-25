@@ -45,3 +45,21 @@ Ceph cung cấp độ tin cậy cao bằng cách replicate mỗi object trên c�
 Trong trường hợp disk failure, Ceph OSD daemon sẽ so sánh với các OSD khác để thực hiện hành động **recovery**. Trong thời gian này, secondary OSD giữ bản sao của object bị lỗi sẽ được đẩy lên làm primary, đồng thời các bản sao mới sẽ được tạo trong qúa trình recover. Qúa trình này là trong suốt với người dùng.
 
 ## Ceph monitors
+Như tên gọi, Ceph monitor chịu trách nhiệm giám sát tình trạng của toàn bộ cluster. Chúng lưu trữ các thông tin quan trọng của cluster, trạng thái của các node và thông tin cấu hình cluster. Các thông tin này được lưu trong **cluster map**, bao gồm monitor, OSD, PG, CRUSH và MDS **map**. 
+
+ - **Monitor map:** Lưu thông tin end-to-end của node monitor như Ceph cluster ID, monitor hostname, địa chỉ IP và port, thời gian cuối cùng có sự thay đổi. Để check monitor map, thực hiện command sau:
+	```# ceph mon dump
+	```
+ - **OSD map:** Lưu các thông tin chung như cluster ID, thời điểm OSD map được tạo và last-changed. Các thông tin liên quan tới **pool** như poll name, poll ID, type, placement group. Nó cũng lưu thông tin của OSD như count, state, weight, last clean interval... Để check OSD map, thực hiện command sau:
+    ```# ceph osd dump
+	```
+ - **PG map:** Lưu PG version, time stamp, last OSD map epoch, full ratio và chi tiết của mỗi placement group như PG id, state của PG... Để check PG map, thực hiện command sau:
+	```# ceph pg dump
+	```
+ - **CRUSH map:** Lưu thông tin về các storage devices, failure domain ( host, rack, row, room, device) và các quy tắc khi lưu trữ dữ liệu .Để check CRUSH  map, thực hiện command sau:
+	```# ceph osd crush dump
+	```
+ - **MDS map:** Lưu thông tin về MDS map epoch, map creation và modification time, data and metadata pool ID, cluster MDS count, MDS state .Để check MDS map, thực hiện command sau:
+    ```# ceph mds dump
+	```
+	
