@@ -48,19 +48,25 @@ Trong trường hợp disk failure, Ceph OSD daemon sẽ so sánh với các OSD
 Như tên gọi, Ceph monitor chịu trách nhiệm giám sát tình trạng của toàn bộ cluster. Chúng lưu trữ các thông tin quan trọng của cluster, trạng thái của các node và thông tin cấu hình cluster. Các thông tin này được lưu trong **cluster map**, bao gồm monitor, OSD, PG, CRUSH và MDS **map**. 
 
  - **Monitor map:** Lưu thông tin end-to-end của node monitor như Ceph cluster ID, monitor hostname, địa chỉ IP và port, thời gian cuối cùng có sự thay đổi. Để check monitor map, thực hiện command sau:
-	```# ceph mon dump
+	```
+	# ceph mon dump
 	```
  - **OSD map:** Lưu các thông tin chung như cluster ID, thời điểm OSD map được tạo và last-changed. Các thông tin liên quan tới **pool** như poll name, poll ID, type, placement group. Nó cũng lưu thông tin của OSD như count, state, weight, last clean interval... Để check OSD map, thực hiện command sau:
-    ```# ceph osd dump
+    ```
+    # ceph osd dump
 	```
  - **PG map:** Lưu PG version, time stamp, last OSD map epoch, full ratio và chi tiết của mỗi placement group như PG id, state của PG... Để check PG map, thực hiện command sau:
-	```# ceph pg dump
+	```
+	# ceph pg dump
 	```
  - **CRUSH map:** Lưu thông tin về các storage devices, failure domain ( host, rack, row, room, device) và các quy tắc khi lưu trữ dữ liệu .Để check CRUSH  map, thực hiện command sau:
 	```
 	# ceph osd crush dump
 	```
  - **MDS map:** Lưu thông tin về MDS map epoch, map creation và modification time, data and metadata pool ID, cluster MDS count, MDS state .Để check MDS map, thực hiện command sau:
-    ```# ceph mds dump
+    ```
+    # ceph mds dump
 	```
-	
+Ceph monitor không lưu và phục vụ dữ liệu tới client, thay vào đó nó cập nhật **cluster map** tới client cũng như các node trong cluster. Client và các node trong cluster sẽ định kì kiểm tra tới monitor để lấy được cluster map gần nhất.
+
+Monitor là một **lightweight daemon**, chúng không yêu cầu dùng nhiều tài nguyên. Các node monitor nên có không gian ổ đĩa đủ lớn để lưu cluster logs ( OSD log, MDS log và monitor log). Một Ceph cluster điển hình thường có nhiều hơn một node monitor và số lượng node monitor nên là số lẻ. Yêu cầu tối thiểu node monitor là 1 và số lượng đề nghị là 3. Điều này cung cấp tính sẵn sàng cao cho hệ thống cũng như tránh được vấn đề split brain. 
