@@ -70,3 +70,12 @@ Như tên gọi, Ceph monitor chịu trách nhiệm giám sát tình trạng c�
 Ceph monitor không lưu và phục vụ dữ liệu tới client, thay vào đó nó cập nhật **cluster map** tới client cũng như các node trong cluster. Client và các node trong cluster sẽ định kì kiểm tra tới monitor để lấy được cluster map gần nhất.
 
 Monitor là một **lightweight daemon**, chúng không yêu cầu dùng nhiều tài nguyên. Các node monitor nên có không gian ổ đĩa đủ lớn để lưu cluster logs ( OSD log, MDS log và monitor log). Một Ceph cluster điển hình thường có nhiều hơn một node monitor và số lượng node monitor nên là số lẻ. Yêu cầu tối thiểu node monitor là 1 và số lượng đề nghị là 3. Điều này cung cấp tính sẵn sàng cao cho hệ thống cũng như tránh được vấn đề split brain. 
+
+## The Ceph block storage (RBD)
+Block storage là một trong những định dạng phổ biến nhất để lưu trữ dữ liệu. Nó cung cấp giải pháp lưu trữ theo block tới physical hypervisor cũng như virtual machine. Ceph RBD driver được tích hợp với Linux kenel và hỗ trợ QEMU/KVM, cho phép truy cập tới Cẹph block device một cách liền mạch.
+
+![enter image description here](http://i.imgur.com/ghOpfC7.png)
+
+Ceph cũng được tích hợp chặt chẽ với các nền tảng đám mây như Openstack. Các service Cinder và Glance sử dụng Ceph như backend để lưu trữ virtual machine volume và OS images. Các image và volume này là **thin provisioned**, điều này giúp giảm một lượng đáng kể không gian lưu trữ trong Openstack.
+
+Tính năng copy-on-write và instant cloning của Ceph giúp Openstack tạo ra hàng trăm máy ảo trong thời gian ngắn. RBD cũng hỗ trợ snapshot, lưu trạng thái hiện tại của máy ảo, sử dụng để khôi phục máy ảo ở nhiều thời điểm. RBD sử dụng **librbd** để cung cấp khả năng lưu trữ theo block một cách tin cậy, đầy đủ và hướng đối tượng. Khi một client write dữ liệu tới RBD, **librbd** map data blocks trong các object và lưu chúng trong Ceph cluster đồng thời replicated chúng trên cluster, do đó cải thiện hiệu năng và độ tin cậy. 
