@@ -79,3 +79,13 @@ Block storage là một trong những định dạng phổ biến nhất để l
 Ceph cũng được tích hợp chặt chẽ với các nền tảng đám mây như Openstack. Các service Cinder và Glance sử dụng Ceph như backend để lưu trữ virtual machine volume và OS images. Các image và volume này là **thin provisioned**, điều này giúp giảm một lượng đáng kể không gian lưu trữ trong Openstack.
 
 Tính năng copy-on-write và instant cloning của Ceph giúp Openstack tạo ra hàng trăm máy ảo trong thời gian ngắn. RBD cũng hỗ trợ snapshot, lưu trạng thái hiện tại của máy ảo, sử dụng để khôi phục máy ảo ở nhiều thời điểm. RBD sử dụng **librbd** để cung cấp khả năng lưu trữ theo block một cách tin cậy, đầy đủ và hướng đối tượng. Khi một client write dữ liệu tới RBD, **librbd** map data blocks trong các object và lưu chúng trong Ceph cluster đồng thời replicated chúng trên cluster, do đó cải thiện hiệu năng và độ tin cậy. 
+
+## Ceph Object Gateway (RADOS Gateway)
+Ceph Object Gateway là một **object storage ínterface** được build trên top của **librados** cung cấp các applications sử dụng RESTful gateway tới Ceph Storage Cluster.  Ceph Object hỗ trợ 2 ínterface:
+
+ 1. S3-compatible: cung cấp chức năng lưu trữ đối tượng với một interface tương thích với đa số RESTful API của Amazon S3.
+ 2. Swift-compatible: cung cấp chức năng lưu trữ đối tượng với một interface trương thích với đa số Openstack Swift API.
+
+![enter image description here](http://i.imgur.com/9sPEHQW.png)
+
+Ceph Object Storage sử dụng Ceph Object Gateway daemon (radosgw) - một máy chủ HTTP để tương tác với Ceph Storage Cluster.  S3 và Swift API đều chia sẻ một namespace chung trong Ceph cluster, vì vậy bạn có thể write data từ một API này và retrieve từ API khác.
